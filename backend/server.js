@@ -4,7 +4,8 @@ const dotenv = require('dotenv');
 const YTDlpWrap = require('yt-dlp-wrap').default;
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs');  // Regular fs for sync operations
+const fsPromises = require('fs').promises;  // Promises version for async operations
 const { exec } = require('child_process');
 const util = require('util');
 const execPromise = util.promisify(exec);
@@ -15,19 +16,13 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // CORS configuration
-const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://yt-clipper.vercel.app',
-    'https://yt-clipper-frontend.vercel.app'
-  ],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
-};
+app.use(cors({
+  origin: true, // Allow all origins in development
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Accept']
+}));
 
-// Middleware
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // Initialize yt-dlp
@@ -36,7 +31,7 @@ const ytDlp = new YTDlpWrap();
 // Create temp directory if it doesn't exist
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
+  fs.mkdirSync(tempDir, { recursive: true });
 }
 
 // Convert HH:MM:SS to seconds
@@ -46,58 +41,37 @@ function timeToSeconds(timeStr) {
 }
 
 // Wait for file to exist and be ready
-function waitForFile(filePath, timeout = 60000) {
-  return new Promise((resolve, reject) => {
-    const startTime = Date.now();
-    const checkFile = () => {
-      try {
-        if (fs.existsSync(filePath)) {
-          const stats = fs.statSync(filePath);
-          if (stats.size > 0) {
-            // Check if file is still being written
-            const currentSize = stats.size;
-            setTimeout(() => {
-              const newStats = fs.statSync(filePath);
-              if (newStats.size === currentSize) {
-                resolve(true);
-              } else {
-                checkFile();
-              }
-            }, 1000);
-          } else {
-            checkFile();
-          }
-        } else if (Date.now() - startTime > timeout) {
-          reject(new Error(`Timeout waiting for file: ${filePath}`));
-        } else {
-          setTimeout(checkFile, 1000);
-        }
-      } catch (error) {
-        if (Date.now() - startTime > timeout) {
-          reject(error);
-        } else {
-          setTimeout(checkFile, 1000);
+async function waitForFile(filePath, timeout = 60000) {
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    try {
+      const stats = await fsPromises.stat(filePath);
+      if (stats.size > 0) {
+        // Wait a bit more to ensure the file is completely written
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const newStats = await fsPromises.stat(filePath);
+        if (newStats.size === stats.size) {
+          return true;
         }
       }
-    };
-    checkFile();
-  });
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  throw new Error(`Timeout waiting for file: ${filePath}`);
 }
 
 // Clean up files safely
 async function cleanupFiles(files) {
   for (const file of files) {
     try {
-      if (fs.existsSync(file)) {
-        await new Promise((resolve) => {
-          fs.unlink(file, (err) => {
-            if (err) console.error(`Error deleting ${file}:`, err);
-            resolve();
-          });
-        });
-      }
+      await fsPromises.unlink(file);
+      console.log(`Deleted file: ${file}`);
     } catch (error) {
-      console.error(`Error cleaning up ${file}:`, error);
+      console.error(`Error deleting file ${file}:`, error);
     }
   }
 }
@@ -237,6 +211,15 @@ app.get('/test-ytdlp', async (req, res) => {
       error: error.message
     });
   }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    error: "Internal server error",
+    details: err.message
+  });
 });
 
 app.listen(port, () => {

@@ -22,9 +22,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { url, start, end, quality } = body;
 
-    console.log('Sending request to backend:', { url, start, end, quality });
+    const fullBackendUrl = `${BACKEND_URL}/api/trim`;
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Backend URL:', BACKEND_URL);
+    console.log('Full request URL:', fullBackendUrl);
+    console.log('Request payload:', { url, start, end, quality });
 
-    const response = await fetch(`${BACKEND_URL}/api/trim`, {
+    const response = await fetch(fullBackendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,10 +38,13 @@ export async function POST(request: Request) {
       body: JSON.stringify({ url, start, end, quality }),
     });
 
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Backend error:', errorData);
-      throw new Error(errorData.details || 'Failed to process video');
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`Backend error: ${response.status} - ${errorText}`);
     }
 
     // Get the video data
