@@ -1,7 +1,10 @@
 // src/app/api/trim/route.ts
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://yt-clipper-backend.onrender.com' 
+    : 'http://localhost:3001');
 
 /**
  * API Route Handler for Video Trimming
@@ -25,7 +28,9 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ url, start, end, quality }),
     });
 
