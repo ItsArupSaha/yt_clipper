@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 
 /**
  * Navigation Bar Component
@@ -13,60 +14,100 @@ import Link from "next/link";
  * hover effects for better interactivity.
  */
 export function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <nav className="relative z-10 bg-gray-800 border-b border-gray-700">
+    <nav className="relative z-50 bg-gray-900/95 border-b border-gray-800/50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
+        <div className="flex items-center justify-between h-14">
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
+            <img
+              src="/icon.png"
+              alt="YT Clipper Logo"
+              className="w-8 h-8"
+            />
+            <span className="text-xl font-bold bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
               YT Clipper
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link
               href="/"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
             >
               Home
             </Link>
             <Link
-              href="https://github.com/yourusername/yt-clipper"
+              href="https://github.com/ItsArupSaha/yt_clipper"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
             >
               GitHub
             </Link>
             <Link
-              href="https://twitter.com/yourusername"
+              href="https://www.linkedin.com/in/arup-saha99/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 transition-colors text-sm"
             >
-              Twitter
+              Linkedin
             </Link>
           </div>
 
-          {/* Mobile Menu Button - Only visible on small screens */}
-          <button className="md:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors">
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-300 hover:text-orange-400 transition-colors"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
             <svg
-              className="w-6 h-6 text-gray-300"
+              className="h-6 w-6"
               fill="none"
-              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              {isMenuOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
             </svg>
           </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 space-y-3">
+            <Link
+              href="/"
+              className="block text-gray-300 hover:text-orange-400 transition-colors text-sm"
+            >
+              Home
+            </Link>
+            <Link
+              href="https://github.com/ItsArupSaha/yt_clipper"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-gray-300 hover:text-orange-400 transition-colors text-sm"
+            >
+              GitHub
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/arup-saha99/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-gray-300 hover:text-orange-400 transition-colors text-sm"
+            >
+              Linkedin
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   );
