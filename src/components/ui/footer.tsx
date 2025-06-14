@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800/50">
+    <footer className="bg-gray-800 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800/50">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -13,19 +13,19 @@ export function Footer() {
                 YT Clipper
               </span>
             </Link>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <p className="text-white text-sm">
               Trim your favorite YouTube videos with precision. Create perfect clips in seconds.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Links</h3>
+            <h3 className="font-semibold text-white mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Home
                 </Link>
@@ -35,7 +35,7 @@ export function Footer() {
                   href="https://github.com/yourusername/yt-clipper"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   GitHub
                 </Link>
@@ -45,7 +45,7 @@ export function Footer() {
                   href="https://twitter.com/yourusername"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Twitter
                 </Link>
@@ -55,12 +55,12 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Resources</h3>
+            <h3 className="font-semibold text-white mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/docs"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Documentation
                 </Link>
@@ -68,7 +68,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/api"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   API Reference
                 </Link>
@@ -76,7 +76,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -86,12 +86,12 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact</h3>
+            <h3 className="font-semibold text-white mb-4">Contact</h3>
             <ul className="space-y-2">
               <li>
                 <a
                   href="mailto:your.email@example.com"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Email Us
                 </a>
@@ -101,7 +101,7 @@ export function Footer() {
                   href="https://discord.gg/your-server"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                  className="text-white hover:text-orange-400 transition-colors"
                 >
                   Join Discord
                 </a>
@@ -111,8 +111,8 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-12 pt-8 border-t border-gray-200/50 dark:border-gray-800/50">
-          <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
+        <div className="mt-12 pt-8 border-t border-gray-700/50">
+          <p className="text-center text-white text-sm">
             © {new Date().getFullYear()} YT Clipper. All rights reserved.
           </p>
         </div>

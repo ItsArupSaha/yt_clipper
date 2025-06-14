@@ -1,19 +1,30 @@
 "use client";
 import Link from "next/link";
 
+/**
+ * Navigation Bar Component
+ * 
+ * A responsive navigation bar that includes:
+ * - Logo/brand name
+ * - Navigation links (Home, GitHub, Twitter)
+ * - Mobile menu button for smaller screens
+ * 
+ * The navbar uses a dark theme with orange accents and includes
+ * hover effects for better interactivity.
+ */
 export function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-800/90 dark:bg-gray-800/95 backdrop-blur-xl border-b border-gray-700/50">
+    <nav className="relative z-10 bg-gray-800 border-b border-gray-700">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Brand Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
               YT Clipper
             </span>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
@@ -39,8 +50,8 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button className="md:hidden p-2 rounded-lg hover:bg-gray-800/50 transition-colors">
+          {/* Mobile Menu Button - Only visible on small screens */}
+          <button className="md:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors">
             <svg
               className="w-6 h-6 text-gray-300"
               fill="none"

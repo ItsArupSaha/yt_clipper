@@ -5,14 +5,23 @@ import { Footer } from "@/components/ui/footer";
 import { Navbar } from "@/components/ui/navbar";
 import { useState } from "react";
 
+/**
+ * Main page component for the YouTube Video Clipper application.
+ * This is a client-side component that handles the video trimming functionality.
+ */
 export default function Home() {
-  const [url, setUrl] = useState("");
-  const [start, setStart] = useState("00:00:00");
-  const [end, setEnd] = useState("00:00:10");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [quality, setQuality] = useState("720p");
+  // State management for form inputs and UI feedback
+  const [url, setUrl] = useState(""); // YouTube video URL
+  const [start, setStart] = useState("00:00:00"); // Start time for trimming
+  const [end, setEnd] = useState("00:00:10"); // End time for trimming
+  const [loading, setLoading] = useState(false); // Loading state for API calls
+  const [message, setMessage] = useState(""); // User feedback messages
+  const [quality, setQuality] = useState("720p"); // Video quality selection
 
+  /**
+   * Extracts the YouTube video ID from various URL formats
+   * Supports both youtube.com/watch?v= and youtu.be/ formats
+   */
   const extractId = (link: string) => {
     const m = /(?:v=|\/)([0-9A-Za-z_-]{11})(?:[?&]|$)/.exec(
       link.replace("youtu.be/", "youtube.com/watch?v=")
@@ -21,12 +30,20 @@ export default function Home() {
   };
   const videoId = extractId(url);
 
+  /**
+   * Converts time string (HH:MM:SS) to seconds
+   * Used for validation and API requests
+   */
   const toSeconds = (t: string) =>
     t
       .split(":")
       .reverse()
       .reduce((s, v, i) => s + Number(v) * 60 ** i, 0);
 
+  /**
+   * Validates the time range for trimming
+   * Ensures end time is after start time and clip is not too long
+   */
   const validateTimeRange = () => {
     const startSeconds = toSeconds(start);
     const endSeconds = toSeconds(end);
@@ -43,6 +60,10 @@ export default function Home() {
     return true;
   };
 
+  /**
+   * Handles the video trimming process
+   * Makes API call to trim the video and triggers download
+   */
   const trim = async () => {
     if (!videoId) return setMessage("❗ Paste a valid YouTube URL first");
     if (!validateTimeRange()) return;
@@ -59,7 +80,7 @@ export default function Home() {
         setMessage(`⚠️ ${error}`);
         return;
       }
-      // Create a download link
+      // Create a download link for the trimmed video
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -75,11 +96,15 @@ export default function Home() {
 
   return (
     <>
+      {/* Navigation Bar */}
       <Navbar />
-      <main className="min-h-screen relative overflow-hidden pt-16">
+      
+      {/* Main Content Area */}
+      <main className="min-h-screen relative overflow-hidden">
+        {/* Animated Background Effect */}
         <AnimatedBackground />
         
-        {/* Hero Section */}
+        {/* Hero Section with Title and Features */}
         <div className="relative z-10 pt-20 pb-16 text-center">
           <div className="container mx-auto px-4">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent animate-gradient">
@@ -88,6 +113,7 @@ export default function Home() {
             <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Trim your favorite YouTube videos with precision. Create perfect clips in seconds.
             </p>
+            {/* Feature Highlights */}
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
                 <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,12 +137,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Form Section */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white/90 dark:bg-black/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-200/50 dark:border-gray-800/50 transform transition-all duration-300 hover:shadow-orange-500/10">
               <div className="space-y-8">
-                {/* URL Input */}
+                {/* YouTube URL Input */}
                 <div className="group">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     YouTube URL
@@ -132,7 +158,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Time Inputs */}
+                {/* Time Range Inputs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -164,7 +190,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Quality Selector */}
+                {/* Video Quality Selector */}
                 <div className="group">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Video Quality
@@ -195,7 +221,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Loading State */}
+                {/* Loading State Indicator */}
                 {loading && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-center space-x-2">
@@ -209,7 +235,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Action Button */}
+                {/* Trim & Download Button */}
                 <button
                   onClick={trim}
                   disabled={loading}
@@ -218,7 +244,7 @@ export default function Home() {
                   {loading ? "Processing..." : "Trim & Download"}
                 </button>
 
-                {/* Message Display */}
+                {/* Status Message Display */}
                 {message && (
                   <div className={`text-center p-4 rounded-xl transition-all duration-300 ${
                     message.includes("✅") ? "bg-green-500/10 text-green-500" :
