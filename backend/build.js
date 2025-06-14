@@ -30,16 +30,22 @@ async function main() {
       fs.mkdirSync(tempDir, { recursive: true });
     }
 
-    // Download yt-dlp
-    console.log('Downloading yt-dlp...');
-    const ytDlpPath = path.join(__dirname, 'yt-dlp.exe');
-    await downloadFile('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe', ytDlpPath);
-    console.log('yt-dlp downloaded successfully');
-
-    // Install npm dependencies
+    // Install npm dependencies first
     console.log('Installing npm dependencies...');
     execSync('npm install', { stdio: 'inherit' });
     console.log('Dependencies installed successfully');
+
+    // Download yt-dlp based on environment
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Installing yt-dlp for production...');
+      execSync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && chmod a+rx /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+      console.log('yt-dlp installed successfully in production');
+    } else {
+      console.log('Downloading yt-dlp for development...');
+      const ytDlpPath = path.join(__dirname, 'yt-dlp.exe');
+      await downloadFile('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe', ytDlpPath);
+      console.log('yt-dlp downloaded successfully for development');
+    }
 
     console.log('Build completed successfully!');
   } catch (error) {
