@@ -20,11 +20,20 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
 
-  const { url, start, end } = body as {
+  const { url, start, end, quality = "720p" } = body as {
     url: string;
     start: string;
     end: string;
+    quality?: string;
   };
+
+  // Map quality to yt-dlp format string
+  const formatMap = {
+    "720p": "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best",
+    "480p": "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480][ext=mp4]/best",
+    "360p": "bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360][ext=mp4]/best",
+  };
+
   const s = toSeconds(start),
     e = toSeconds(end);
   if (e <= s)
@@ -40,7 +49,7 @@ export async function POST(req: NextRequest) {
   const args = [
     url,
     "-f",
-    "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+    formatMap[quality as keyof typeof formatMap] || formatMap["720p"],
     "--download-sections",
     `*${section}`,
     "--merge-output-format",

@@ -11,6 +11,7 @@ export default function Home() {
   const [end, setEnd] = useState("00:00:10");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [quality, setQuality] = useState("720p");
 
   const extractId = (link: string) => {
     const m = /(?:v=|\/)([0-9A-Za-z_-]{11})(?:[?&]|$)/.exec(
@@ -51,7 +52,7 @@ export default function Home() {
       const res = await fetch("/api/trim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, start, end }),
+        body: JSON.stringify({ url, start, end, quality }),
       });
       if (!res.ok) {
         const error = await res.text();
@@ -161,6 +162,22 @@ export default function Home() {
                       <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-200/50 dark:ring-gray-800/50 group-hover:ring-orange-500/50 transition-all duration-300 pointer-events-none" />
                     </div>
                   </div>
+                </div>
+
+                {/* Quality Selector */}
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Video Quality
+                  </label>
+                  <select
+                    value={quality}
+                    onChange={(e) => setQuality(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-100/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                  >
+                    <option value="720p">720p (HD)</option>
+                    <option value="480p">480p (SD)</option>
+                    <option value="360p">360p (Low)</option>
+                  </select>
                 </div>
 
                 {/* Video Preview */}
