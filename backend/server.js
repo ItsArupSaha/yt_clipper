@@ -18,7 +18,7 @@ const port = process.env.PORT || 3001;
 // Initialize yt-dlp with the correct binary path
 let ytDlpBinary = 'yt-dlp';
 if (process.env.NODE_ENV === 'production') {
-  ytDlpBinary = '/usr/local/bin/yt-dlp';
+  ytDlpBinary = path.join(__dirname, 'yt-dlp');
 } else {
   // Use local yt-dlp.exe on Windows
   ytDlpBinary = path.join(__dirname, 'yt-dlp.exe');

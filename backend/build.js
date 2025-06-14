@@ -38,7 +38,9 @@ async function main() {
     // Download yt-dlp based on environment
     if (process.env.NODE_ENV === 'production') {
       console.log('Installing yt-dlp for production...');
-      execSync('curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && chmod a+rx /usr/local/bin/yt-dlp', { stdio: 'inherit' });
+      const ytDlpPath = path.join(__dirname, 'yt-dlp');
+      await downloadFile('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp', ytDlpPath);
+      fs.chmodSync(ytDlpPath, '755'); // Make it executable
       console.log('yt-dlp installed successfully in production');
     } else {
       console.log('Downloading yt-dlp for development...');
