@@ -38,9 +38,9 @@ export function AnimatedBackground() {
         this.size = Math.random() * 3 + 1;
         this.speedX = Math.random() * 2 - 1;
         this.speedY = Math.random() * 2 - 1;
-        this.opacity = Math.random() * 0.5 + 0.1;
-        this.hue = Math.random() * 30 + 20; // Orange hue range
-        this.color = `hsla(${this.hue}, 100%, 50%, ${this.opacity})`;
+        this.opacity = Math.random() * 0.3 + 0.1; // Reduced opacity range
+        this.hue = Math.random() * 20 + 15; // Darker orange hue range
+        this.color = `hsla(${this.hue}, 100%, 45%, ${this.opacity})`; // Reduced lightness
       }
 
       update() {
@@ -54,8 +54,8 @@ export function AnimatedBackground() {
 
         // Fade in/out
         this.opacity += Math.random() * 0.02 - 0.01;
-        this.opacity = Math.max(0.1, Math.min(0.6, this.opacity));
-        this.color = `hsla(${this.hue}, 100%, 50%, ${this.opacity})`;
+        this.opacity = Math.max(0.1, Math.min(0.4, this.opacity)); // Reduced max opacity
+        this.color = `hsla(${this.hue}, 100%, 45%, ${this.opacity})`; // Reduced lightness
       }
 
       draw() {
@@ -98,7 +98,7 @@ export function AnimatedBackground() {
       if (!ctx || !canvas) return;
       
       // Clear canvas with fade effect
-      ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.05)"; // Reduced fade effect
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw particles
@@ -129,7 +129,7 @@ export function AnimatedBackground() {
 
           if (distance < 100) {
             ctx.beginPath();
-            ctx.strokeStyle = `hsla(${p1.hue}, 100%, 50%, ${0.1 * (1 - distance / 100)})`;
+            ctx.strokeStyle = `hsla(${p1.hue}, 100%, 45%, ${0.05 * (1 - distance / 100)})`; // Reduced opacity and lightness
             ctx.lineWidth = 0.5;
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
@@ -155,7 +155,7 @@ export function AnimatedBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ background: "radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)" }}
+      style={{ background: "radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%)" }}
     />
   );
 } 
