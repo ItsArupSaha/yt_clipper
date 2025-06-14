@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { url, start, end, quality } = body;
 
-    const fullBackendUrl = `${BACKEND_URL}/api/trim`;
+    // Ensure we don't have double slashes in the URL
+    const fullBackendUrl = `${BACKEND_URL.replace(/\/$/, '')}/api/trim`;
     console.log('Environment:', process.env.NODE_ENV);
     console.log('Backend URL:', BACKEND_URL);
     console.log('Full request URL:', fullBackendUrl);

@@ -79,16 +79,16 @@ async function cleanupFiles(files) {
 // Routes
 app.post('/api/trim', async (req, res) => {
   const { url, start, end, quality } = req.body;
-  console.log('Received request:', { url, start, end, quality });
+  console.log('Received trim request:', { url, start, end, quality });
 
   if (!url || !start || !end) {
-    console.error('Missing parameters:', { url, start, end });
-    return res.status(400).json({ error: 'Missing required parameters' });
+    return res.status(400).json({
+      error: "Missing required parameters",
+      details: "URL, start time, and end time are required"
+    });
   }
 
-  const timestamp = Date.now();
-  const outputPath = path.join(tempDir, `output_${timestamp}.mp4`);
-  const trimmedPath = path.join(tempDir, `trimmed_${timestamp}.mp4`);
+  const outputPath = path.join(tempDir, `trimmed_${Date.now()}.mp4`);
   const partPath = `${outputPath}.part`;
 
   try {
@@ -135,13 +135,13 @@ app.post('/api/trim', async (req, res) => {
     console.log('File size:', stats.size, 'bytes');
 
     // Trim video with ffmpeg
-    console.log('Trimming video...', { startSeconds, endSeconds, duration, trimmedPath });
+    console.log('Trimming video...', { startSeconds, endSeconds, duration, outputPath });
     
     await new Promise((resolve, reject) => {
       ffmpeg(outputPath)
         .setStartTime(startSeconds)
         .setDuration(duration)
-        .output(trimmedPath)
+        .output(outputPath)
         .on('start', (commandLine) => {
           console.log('FFmpeg command:', commandLine);
         })
@@ -161,28 +161,28 @@ app.post('/api/trim', async (req, res) => {
 
     // Wait for trimmed file to be ready
     console.log('Waiting for trimmed file to be ready...');
-    await waitForFile(trimmedPath);
+    await waitForFile(outputPath);
     console.log('Trimmed file is ready');
 
     // Verify trimmed file exists and has content
-    const trimmedStats = fs.statSync(trimmedPath);
+    const trimmedStats = fs.statSync(outputPath);
     console.log('Trimmed file size:', trimmedStats.size, 'bytes');
 
     console.log('Sending file to client...');
     // Send the trimmed video
-    res.download(trimmedPath, 'trimmed_video.mp4', async (err) => {
+    res.download(outputPath, 'trimmed_video.mp4', async (err) => {
       if (err) {
         console.error('Error sending file:', err);
       }
       // Clean up files after sending
-      await cleanupFiles([outputPath, trimmedPath, partPath]);
+      await cleanupFiles([outputPath, partPath]);
       console.log('Temporary files cleaned up');
     });
 
   } catch (error) {
     console.error('Error processing video:', error);
     // Clean up files on error
-    await cleanupFiles([outputPath, trimmedPath, partPath]);
+    await cleanupFiles([outputPath, partPath]);
     res.status(500).json({ 
       error: 'Error processing video',
       details: error.message 
