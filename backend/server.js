@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const YTDlpWrap = require('yt-dlp-wrap').default;
+const ytDlp = require('yt-dlp-wrap').default;
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 const fs = require('fs');  // Regular fs for sync operations
@@ -15,6 +15,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Initialize yt-dlp with the correct binary path
+let ytDlpBinary = 'yt-dlp';
+if (process.env.NODE_ENV === 'production') {
+  ytDlpBinary = '/usr/local/bin/yt-dlp';
+} else {
+  // Use local yt-dlp.exe on Windows
+  ytDlpBinary = path.join(__dirname, 'yt-dlp.exe');
+}
+
+// Create yt-dlp instance with the correct binary path
+const ytDlpInstance = new ytDlp(ytDlpBinary);
+
 // CORS configuration
 app.use(cors({
   origin: true, // Allow all origins in development
@@ -24,9 +36,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-
-// Initialize yt-dlp
-const ytDlp = new YTDlpWrap();
 
 // Create temp directory if it doesn't exist
 const tempDir = path.join(__dirname, 'temp');
@@ -103,24 +112,22 @@ app.post('/api/trim', async (req, res) => {
 
     console.log('Output path:', outputPath);
 
-    // Download video with yt-dlp
+    // Get video info
     console.log('Getting video info...');
-    const videoInfo = await ytDlp.getVideoInfo(url);
-    console.log('Available formats:', videoInfo.formats.map(f => ({ height: f.height, format_id: f.format_id })));
-    
-    const format = videoInfo.formats.find(f => f.height === parseInt(quality)) || videoInfo.formats[0];
-    console.log('Selected format:', format);
+    const videoInfo = await ytDlpInstance.getVideoInfo(url);
+    console.log('Video info:', videoInfo);
 
+    // Download video
     console.log('Downloading video...');
-    await ytDlp.exec([
+    await ytDlpInstance.exec([
       url,
-      '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',  // Better format selection
+      '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
       '--merge-output-format', 'mp4',
-      '--no-check-certificate',  // Skip certificate validation
-      '--prefer-insecure',  // Prefer insecure connections
-      '--no-warnings',  // Suppress warnings
-      '--no-playlist',  // Download only the video, not the playlist
-      '--extractor-args', 'youtube:player_client=android',  // Use mobile client
+      '--no-check-certificate',
+      '--prefer-insecure',
+      '--no-warnings',
+      '--no-playlist',
+      '--extractor-args', 'youtube:player_client=android',
       '-o', outputPath
     ]);
     console.log('Download complete');
@@ -198,7 +205,7 @@ app.get('/health', (req, res) => {
 // Test yt-dlp endpoint
 app.get('/test-ytdlp', async (req, res) => {
   try {
-    const version = await ytDlp.getVersion();
+    const version = await ytDlpInstance.getVersion();
     res.json({ 
       status: 'ok',
       version: version,
